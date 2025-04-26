@@ -1,0 +1,343 @@
+/**
+ * NovaStudio - Plugin de personalización para WordPress
+ * Estilos CSS para el frontend
+ */
+
+/**
+ * Variables CSS globales (estas se sobreescriben dinámicamente desde el plugin)
+ */
+:root {
+    /* Colores Base */
+    --color-primary: #FF6B6B;
+    --color-secondary: #4ECDC4;
+    --color-accent: #FFE66D;
+    --color-success: #7BC950;
+    --color-warning: #FFA552;
+    --color-error: #F76F8E;
+    --color-dark: #505168;
+    --color-light: #F7F9F9;
+    
+    /* Tipografía */
+    --font-primary: 'Jost', 'Quicksand', sans-serif;
+    --font-secondary: 'Jost', 'Quicksand', sans-serif;
+    --font-size-base: 16px;
+    
+    /* Espaciado */
+    --spacing-base: 1rem;
+    --spacing-small: 0.5rem;
+    --spacing-large: 2rem;
+    
+    /* Bordes y Esquinas */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-width: 2px;
+    
+    /* Sombras (Estilo Neo-Brutalist) */
+    --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.1);
+    --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.1);
+    
+    /* Tamaños de Layout */
+    --sidebar-width-expanded: 250px;
+    --sidebar-width-collapsed: 60px;
+    --header-height: 60px;
+    
+    /* Transiciones */
+    --transition-fast: 150ms;
+    --transition-normal: 300ms;
+    --transition-slow: 500ms;
+}
+
+/**
+ * Modo Oscuro - Variables CSS
+ * Estas variables serán sobreescritas con los valores personalizados
+ */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #2A2D45;
+        --color-text: #E0E0E0;
+        --color-border: #3F4577;
+        --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.3);
+        --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Control manual para temas oscuros/claros */
+html.light-mode {
+    --color-background: #F7F9F9;
+    --color-text: #505168;
+    --color-border: #E0E0E0;
+    --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.1);
+    --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+html.dark-mode {
+    --color-background: #2A2D45;
+    --color-text: #E0E0E0;
+    --color-border: #3F4577;
+    --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.3);
+    --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.3);
+}
+
+/**
+ * Estilos Básicos para Componentes UI
+ * Estos estilos se pueden personalizar desde el panel del plugin
+ */
+
+/* Botones */
+.saas-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    border-radius: var(--border-radius-md);
+    border: var(--border-width) solid transparent;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    text-decoration: none;
+}
+
+.saas-btn:hover {
+    transform: translateY(-2px);
+}
+
+.saas-btn-primary {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.saas-btn-primary:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.saas-btn-secondary {
+    background-color: var(--color-secondary);
+    color: #ffffff;
+    border-color: var(--color-secondary);
+    box-shadow: var(--shadow-sm);
+}
+
+.saas-btn-secondary:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.saas-btn-outline {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.saas-btn-outline:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Tarjetas/Cards */
+.saas-card {
+    background-color: var(--color-background);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    overflow: hidden;
+}
+
+.saas-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.saas-card-header {
+    padding: 1rem;
+    border-bottom: var(--border-width) solid var(--color-border);
+    font-weight: 600;
+}
+
+.saas-card-body {
+    padding: 1rem;
+}
+
+.saas-card-footer {
+    padding: 1rem;
+    border-top: var(--border-width) solid var(--color-border);
+}
+
+/* Formularios */
+.saas-form-group {
+    margin-bottom: 1rem;
+}
+
+.saas-form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-family: var(--font-primary);
+}
+
+.saas-form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-primary);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.saas-form-control:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+/* Selectores de Tema */
+.saas-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: var(--border-width) solid var(--color-border);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.saas-theme-toggle:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Animaciones */
+@keyframes saas-fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes saas-slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Utilidades */
+.saas-shadow-sm {
+    box-shadow: var(--shadow-sm);
+}
+
+.saas-shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
+.saas-shadow-lg {
+    box-shadow: var(--shadow-lg);
+}
+
+.saas-rounded-sm {
+    border-radius: var(--border-radius-sm);
+}
+
+.saas-rounded-md {
+    border-radius: var(--border-radius-md);
+}
+
+.saas-rounded-lg {
+    border-radius: var(--border-radius-lg);
+}
+
+/* Estilos específicos para integraciones de plugins */
+
+/* Integración con Chat IA */
+.saas-chat-bubble {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.saas-chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.saas-chat-message {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.saas-chat-user .saas-chat-message {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    border: var(--border-width) solid rgba(var(--color-primary-rgb), 0.2);
+    margin-left: auto;
+}
+
+.saas-chat-ai .saas-chat-message {
+    background-color: rgba(var(--color-secondary-rgb), 0.1);
+    border: var(--border-width) solid rgba(var(--color-secondary-rgb), 0.2);
+}
+
+/* Integración con Quick Links */
+.saas-quicklink-card {
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+}
+
+.saas-quicklink-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+.saas-quicklink-info {
+    flex: 1;
+}
+
+.saas-quicklink-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.saas-quicklink-stats {
+    font-size: 0.875rem;
+    color: rgba(var(--color-text-rgb), 0.6);
+}
+
+.saas-quicklink-actions {
+    margin-left: 1rem;
+}
