@@ -204,329 +204,418 @@
                 }
             };
             
-            if (!presets[preset]) {
-                return;
-            }
+            // Verificar si el preset existe
+            if (!presets[preset]) return;
             
-            // Actualizar cada campo de color con los valores del preset
-            $.each(presets[preset], function(key, value) {
-                var $input = $('#color_' + key);
-                if ($input.length) {
-                    $input.val(value).wpColorPicker('color', value);
+            // Aplicar cada color del preset
+            for (var color in presets[preset]) {
+                if (presets[preset].hasOwnProperty(color)) {
+                    var $colorField = $('#color_' + color);
+                    $colorField.val(presets[preset][color]).trigger('change');
                 }
-            });
+            }
             
             // Actualizar vista previa
             this.updatePreview();
         },
         
         /**
-         * Configura el iframe de vista previa
+         * Configura la vista previa en tiempo real
          */
         setupPreview: function() {
-            // Si no existe el iframe, no hacer nada
-            if (!$('#novastudio-preview-iframe').length) {
-                return;
-            }
+            // Configurar iframe de vista previa
+            var $iframe = $('#novastudio-preview-iframe');
             
-            // Esperar a que el iframe haya cargado
-            $('#novastudio-preview-iframe').on('load', function() {
+            // Cuando el iframe ha cargado
+            $iframe.on('load', function() {
+                // Inicializar eventos de refresco de vista previa
                 NovaStudioAdmin.updatePreview();
             });
         },
         
         /**
-         * Actualiza la vista previa con los valores actuales
+         * Actualiza la vista previa en tiempo real
          */
         updatePreview: function() {
-            // Si no existe el iframe, no hacer nada
-            if (!$('#novastudio-preview-iframe').length) {
-                return;
-            }
-            
             var $iframe = $('#novastudio-preview-iframe');
             var iframeWindow = $iframe[0].contentWindow;
             
-            // Generar CSS personalizado
-            var customCSS = ':root {\n';
+            // Verificar que el iframe esté cargado
+            if (!iframeWindow) return;
             
-            // Colores
-            $('.novastudio-color-field').each(function() {
-                var $input = $(this);
-                var name = $input.attr('id').replace('color_', '');
-                var value = $input.val();
-                
-                if (value) {
-                    customCSS += '  --color-' + name + ': ' + value + ';\n';
-                }
-            });
+            // Recopilar valores actuales de las opciones
+            var cssVars = this.getCustomCSSVars();
             
-            // Tipografía
-            var fontPrimary = $('#font_primary').val();
-            var fontSecondary = $('#font_secondary').val();
-            var baseSize = $('#font_size_base').val();
-            
-            if (fontPrimary) {
-                customCSS += '  --font-primary: ' + fontPrimary + ';\n';
-            }
-            
-            if (fontSecondary) {
-                customCSS += '  --font-secondary: ' + fontSecondary + ';\n';
-            }
-            
-            if (baseSize) {
-                customCSS += '  --font-size-base: ' + baseSize + ';\n';
-            }
-            
-            // Cerrar el bloque root
-            customCSS += '}\n';
-            
-            // Agregar CSS personalizado si existe
-            if ($('#custom_css').length) {
-                customCSS += $('#custom_css').val();
-            }
-            
-            // Inyectar CSS en el iframe
+            // Crear o actualizar hoja de estilos personalizada en el iframe
             try {
-                var iframeDoc = iframeWindow.document;
-                var styleId = 'novastudio-preview-style';
+                var styleSheet = iframeWindow.document.getElementById('novastudio-preview-styles');
                 
-                // Eliminar style anterior si existe
-                var oldStyle = iframeDoc.getElementById(styleId);
-                if (oldStyle) {
-                    oldStyle.remove();
+                if (!styleSheet) {
+                    styleSheet = iframeWindow.document.createElement('style');
+                    styleSheet.id = 'novastudio-preview-styles';
+                    iframeWindow.document.head.appendChild(styleSheet);
                 }
                 
-                // Crear nuevo style y agregar al head del iframe
-                var style = iframeDoc.createElement('style');
-                style.id = styleId;
-                style.innerHTML = customCSS;
-                iframeDoc.head.appendChild(style);
-                
-                // Forzar reflow
-                iframeDoc.body.style.display = 'none';
-                iframeDoc.body.offsetHeight; // Forzar reflow
-                iframeDoc.body.style.display = '';
-                
+                // Aplicar estilos
+                styleSheet.textContent = cssVars;
             } catch (e) {
                 console.error('Error al actualizar vista previa:', e);
             }
         },
         
         /**
-         * Actualiza el orden de los elementos del menú
+         * Genera las variables CSS personalizadas
+         * 
+         * @return {string} Variables CSS personalizadas
          */
-        updateMenuOrder: function() {
-            // Actualizar los índices de los campos
-            $('.novastudio-menu-items .novastudio-menu-item').each(function(index) {
-                var $item = $(this);
-                var itemId = $item.data('id');
+        getCustomCSSVars: function() {
+            var css = ':root {\n';
+            
+            // Colores
+            $('.novastudio-color-field').each(function() {
+                var $field = $(this);
+                var id = $field.attr('id');
+                var value = $field.val();
                 
-                // Actualizar campo de orden
-                $item.find('input[name$="[order]"]').val(index);
-                
-                // Actualizar los índices en los nombres de los campos
-                $item.find('input, select, textarea').each(function() {
-                    var name = $(this).attr('name');
-                    if (name) {
-                        var newName = name.replace(/\[menu_items\]\[\d+\]/, '[menu_items][' + index + ']');
-                        $(this).attr('name', newName);
-                    }
-                });
+                if (id && value) {
+                    var varName = '--color-' + id.replace('color_', '');
+                    css += '    ' + varName + ': ' + value + ';\n';
+                }
             });
+            
+            // Tipografía
+            if ($('#font_primary').length) {
+                css += '    --font-primary: ' + $('#font_primary').val() + ';\n';
+            }
+            
+            if ($('#font_secondary').length) {
+                css += '    --font-secondary: ' + $('#font_secondary').val() + ';\n';
+            }
+            
+            if ($('#font_size_base').length) {
+                css += '    --font-size-base: ' + $('#font_size_base').val() + ';\n';
+            }
+            
+            // Sidebar
+            if ($('#sidebar_expanded_width').length) {
+                css += '    --sidebar-width-expanded: ' + $('#sidebar_expanded_width').val() + ';\n';
+            }
+            
+            if ($('#sidebar_collapsed_width').length) {
+                css += '    --sidebar-width-collapsed: ' + $('#sidebar_collapsed_width').val() + ';\n';
+            }
+            
+            // Header
+            if ($('#header_height').length) {
+                css += '    --header-height: ' + $('#header_height').val() + ';\n';
+            }
+            
+            css += '}\n';
+            
+            // Agregar CSS personalizado si existe
+            if ($('#custom_css').length) {
+                css += $('#custom_css').val();
+            }
+            
+            return css;
         },
         
         /**
-         * Vincula eventos de UI
+         * Actualiza el orden de los elementos de menú
+         */
+        updateMenuOrder: function() {
+            var order = [];
+            
+            // Recorrer todos los elementos de menú
+            $('.novastudio-menu-item').each(function(index) {
+                var $item = $(this);
+                var itemId = $item.data('id');
+                
+                // Actualizar orden en la interfaz
+                $item.find('.novastudio-menu-item-order').val(index);
+                
+                // Agregar al array de orden
+                order.push(itemId);
+                
+                // Procesar submenús si existen
+                var subOrder = [];
+                $item.find('.novastudio-submenu-item').each(function(subIndex) {
+                    var $subItem = $(this);
+                    var subItemId = $subItem.data('id');
+                    
+                    // Actualizar orden en la interfaz
+                    $subItem.find('.novastudio-menu-item-order').val(subIndex);
+                    
+                    // Agregar al array de suborden
+                    subOrder.push(subItemId);
+                });
+                
+                // Guardar el orden de los submenús
+                if (subOrder.length) {
+                    $item.find('.novastudio-submenu-order').val(JSON.stringify(subOrder));
+                }
+            });
+            
+            // Guardar el orden en el campo oculto
+            $('#novastudio_menu_order').val(JSON.stringify(order));
+        },
+        
+        /**
+         * Vincula eventos del formulario
          */
         bindEvents: function() {
             var self = this;
             
-            // Formulario principal
+            // Envío del formulario
             $('#novastudio-options-form').on('submit', function(e) {
-                // El submit normal es manejado por WordPress
+                e.preventDefault();
+                
+                // Mostrar indicador de carga
+                self.showLoadingIndicator();
+                
+                // Recopilar datos del formulario
+                var formData = new FormData(this);
+                formData.append('action', 'novastudio_save_settings');
+                formData.append('nonce', novaStudioAdmin.nonce);
+                
+                // Enviar solicitud AJAX
+                $.ajax({
+                    url: novaStudioAdmin.ajaxUrl,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        self.hideLoadingIndicator();
+                        
+                        if (response.success) {
+                            self.showMessage(response.data.message, 'success');
+                        } else {
+                            self.showMessage(response.data.message, 'error');
+                        }
+                    },
+                    error: function() {
+                        self.hideLoadingIndicator();
+                        self.showMessage(novaStudioAdmin.strings.saveError, 'error');
+                    }
+                });
             });
             
-            // Botón para resetear a valores predeterminados
+            // Restablecimiento de valores predeterminados
             $('#novastudio-reset-settings').on('click', function(e) {
                 e.preventDefault();
                 
                 if (confirm(novaStudioAdmin.strings.resetConfirm)) {
-                    self.resetSettings();
+                    // Mostrar indicador de carga
+                    self.showLoadingIndicator();
+                    
+                    // Enviar solicitud AJAX
+                    $.ajax({
+                        url: novaStudioAdmin.ajaxUrl,
+                        type: 'POST',
+                        data: {
+                            action: 'novastudio_reset_settings',
+                            nonce: novaStudioAdmin.nonce
+                        },
+                        success: function(response) {
+                            self.hideLoadingIndicator();
+                            
+                            if (response.success) {
+                                self.showMessage(response.data.message, 'success');
+                                
+                                // Recargar la página para aplicar valores predeterminados
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 1000);
+                            } else {
+                                self.showMessage(response.data.message, 'error');
+                            }
+                        },
+                        error: function() {
+                            self.hideLoadingIndicator();
+                            self.showMessage(novaStudioAdmin.strings.resetError, 'error');
+                        }
+                    });
                 }
             });
             
-            // Insertar snippets de CSS
-            $('.novastudio-insert-css').on('click', function(e) {
-                e.preventDefault();
-                
-                var cssSnippet = $(this).prev('pre').text();
-                var $cssEditor = $('#custom_css');
-                
-                // Si hay un editor CodeMirror activo
-                if (wp.codeEditor && wp.codeEditor.defaultSettings) {
-                    var editor = wp.codeEditor.initialize($cssEditor[0]);
-                    var currentValue = editor.codemirror.getValue();
-                    editor.codemirror.setValue(currentValue + '\n\n' + cssSnippet);
-                } else {
-                    var currentValue = $cssEditor.val();
-                    $cssEditor.val(currentValue + '\n\n' + cssSnippet);
-                }
-            });
-            
-            // Expandir/colapsar elementos de menú
+            // Eventos para menús y submenús
             $(document).on('click', '.novastudio-menu-item-toggle', function(e) {
                 e.preventDefault();
-                
-                var $item = $(this).closest('.novastudio-menu-item');
-                $item.toggleClass('expanded');
-                
-                // Cambiar icono
-                var $icon = $(this).find('i');
-                if ($item.hasClass('expanded')) {
-                    $icon.removeClass('dashicons-arrow-down').addClass('dashicons-arrow-up');
-                } else {
-                    $icon.removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
-                }
+                $(this).closest('.novastudio-menu-item').toggleClass('expanded');
             });
             
-            // Eliminar elemento de menú
-            $(document).on('click', '.novastudio-menu-item-delete', function(e) {
+            $(document).on('click', '.novastudio-add-menu-item', function(e) {
                 e.preventDefault();
-                
-                if (confirm('¿Estás seguro de que deseas eliminar este elemento?')) {
-                    $(this).closest('.novastudio-menu-item').remove();
-                    self.updateMenuOrder();
-                }
+                self.addMenuItem();
             });
             
-            // Agregar nuevo elemento de menú
-            $('.novastudio-add-menu-item').on('click', function(e) {
+            $(document).on('click', '.novastudio-add-submenu-item', function(e) {
                 e.preventDefault();
-                
-                var $container = $('.novastudio-menu-items');
-                var itemCount = $container.find('.novastudio-menu-item').length;
-                
-                // Template para nuevo elemento (esto debería venir de un script en la página)
-                var template = $('#novastudio-menu-item-template').html();
-                if (!template) {
-                    alert('Error: Template no encontrado');
-                    return;
-                }
-                
-                // Reemplazar placeholders con valores reales
-                template = template.replace(/\{index\}/g, itemCount);
-                
-                // Agregar nuevo elemento al contenedor
-                $container.append(template);
-                
-                // Inicializar nuevos controles si es necesario
-                self.initColorPickers();
-                self.initMediaUploaders();
-                
-                // Actualizar orden
+                var $parentItem = $(this).closest('.novastudio-menu-item');
+                self.addSubmenuItem($parentItem);
+            });
+            
+            $(document).on('click', '.novastudio-remove-menu-item', function(e) {
+                e.preventDefault();
+                $(this).closest('.novastudio-menu-item, .novastudio-submenu-item').remove();
                 self.updateMenuOrder();
             });
             
-            // Selector de iconos
-            $(document).on('click', '.novastudio-icon-selector-button', function(e) {
+            // Insertar ejemplos de CSS
+            $('.novastudio-insert-css').on('click', function(e) {
                 e.preventDefault();
+                var css = $(this).prev('pre').text();
+                var $customCss = $('#custom_css');
                 
-                var $button = $(this);
-                var $modal = $('#novastudio-icon-selector-modal');
-                var $input = $button.siblings('input[type="hidden"]');
+                // Obtener instancia de CodeMirror si está disponible
+                var cm = $customCss.data('cm');
                 
-                // Mostrar modal
-                $modal.show();
-                
-                // Marcar icono actualmente seleccionado
-                var currentIcon = $input.val();
-                if (currentIcon) {
-                    $modal.find('.novastudio-icon-item[data-icon="' + currentIcon + '"]').addClass('selected');
+                if (cm) {
+                    var doc = cm.getDoc();
+                    var cursor = doc.getCursor();
+                    doc.replaceRange(css, cursor);
+                } else {
+                    // Fallback si CodeMirror no está disponible
+                    $customCss.val($customCss.val() + '\n' + css);
                 }
                 
-                // Configurar callback para cuando se selecciona un icono
-                $modal.data('callback', function(icon) {
-                    $input.val(icon);
-                    $button.find('i').attr('class', 'dashicons dashicons-' + icon);
-                    $modal.hide();
-                });
+                // Actualizar vista previa
+                self.updatePreview();
             });
             
-            // Seleccionar icono
-            $(document).on('click', '.novastudio-icon-item', function(e) {
-                e.preventDefault();
-                
-                var $item = $(this);
-                var $modal = $item.closest('#novastudio-icon-selector-modal');
-                var icon = $item.data('icon');
-                var callback = $modal.data('callback');
-                
-                // Marcar como seleccionado
-                $modal.find('.novastudio-icon-item').removeClass('selected');
-                $item.addClass('selected');
-                
-                // Llamar al callback
-                if (typeof callback === 'function') {
-                    callback(icon);
-                }
-            });
-            
-            // Cerrar modal de iconos
-            $(document).on('click', '.novastudio-icon-selector-close', function(e) {
-                e.preventDefault();
-                $('#novastudio-icon-selector-modal').hide();
-            });
-            
-            // Cerrar modal al hacer clic fuera
-            $(document).on('click', function(e) {
-                var $modal = $('#novastudio-icon-selector-modal');
-                if ($modal.is(':visible') && !$(e.target).closest('.novastudio-icon-selector-modal-content, .novastudio-icon-selector-button').length) {
-                    $modal.hide();
-                }
+            // Cambio en campos de formulario
+            $('#novastudio-options-form input, #novastudio-options-form select, #novastudio-options-form textarea').on('change', function() {
+                self.updatePreview();
             });
         },
         
         /**
-         * Resetea la configuración a valores predeterminados vía AJAX
+         * Muestra un indicador de carga
          */
-        resetSettings: function() {
-            $.ajax({
-                url: novaStudioAdmin.ajaxUrl,
-                type: 'POST',
-                data: {
-                    action: 'novastudio_reset_settings',
-                    nonce: novaStudioAdmin.nonce
-                },
-                beforeSend: function() {
-                    // Mostrar indicador de carga
-                    $('body').addClass('novastudio-loading');
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Mostrar mensaje de éxito
-                        alert(novaStudioAdmin.strings.resetSuccess);
-                        
-                        // Recargar la página para mostrar los valores por defecto
-                        window.location.reload();
-                    } else {
-                        // Mostrar mensaje de error
-                        alert(novaStudioAdmin.strings.resetError);
-                    }
-                },
-                error: function() {
-                    // Mostrar mensaje de error
-                    alert(novaStudioAdmin.strings.resetError);
-                },
-                complete: function() {
-                    // Ocultar indicador de carga
-                    $('body').removeClass('novastudio-loading');
-                }
-            });
+        showLoadingIndicator: function() {
+            // Si ya existe un indicador, no crear otro
+            if ($('#novastudio-loading').length) return;
+            
+            $('body').append('<div id="novastudio-loading" class="novastudio-loading"><div class="novastudio-spinner"></div></div>');
+        },
+        
+        /**
+         * Oculta el indicador de carga
+         */
+        hideLoadingIndicator: function() {
+            $('#novastudio-loading').remove();
+        },
+        
+        /**
+         * Muestra un mensaje de notificación
+         * 
+         * @param {string} message Mensaje a mostrar
+         * @param {string} type    Tipo de mensaje ('success', 'error', 'warning', 'info')
+         */
+        showMessage: function(message, type) {
+            var $notice = $('<div class="novastudio-notice novastudio-notice-' + type + '"><p>' + message + '</p></div>');
+            
+            // Agregar mensaje al inicio del formulario
+            $('#novastudio-options-form').prepend($notice);
+            
+            // Eliminar mensaje después de 3 segundos
+            setTimeout(function() {
+                $notice.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3000);
+        },
+        
+        /**
+         * Agrega un nuevo elemento de menú
+         */
+        addMenuItem: function() {
+            var itemId = 'menu-item-' + Date.now();
+            var itemIndex = $('.novastudio-menu-item').length;
+            
+            var itemTemplate = 
+                '<div class="novastudio-menu-item" data-id="' + itemId + '">' +
+                    '<div class="novastudio-menu-item-header">' +
+                        '<span class="novastudio-menu-item-title">Nuevo Elemento</span>' +
+                        '<div class="novastudio-menu-item-actions">' +
+                            '<button type="button" class="button button-small novastudio-menu-item-toggle">Editar</button>' +
+                            '<button type="button" class="button button-small novastudio-remove-menu-item">Eliminar</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="novastudio-menu-item-content">' +
+                        '<input type="hidden" name="menu_items[' + itemIndex + '][id]" value="' + itemId + '">' +
+                        '<input type="hidden" class="novastudio-menu-item-order" name="menu_items[' + itemIndex + '][order]" value="' + itemIndex + '">' +
+                        '<div class="novastudio-form-group">' +
+                            '<label>Título</label>' +
+                            '<input type="text" name="menu_items[' + itemIndex + '][title]" value="Nuevo Elemento" class="regular-text">' +
+                        '</div>' +
+                        '<div class="novastudio-form-group">' +
+                            '<label>URL</label>' +
+                            '<input type="text" name="menu_items[' + itemIndex + '][url]" value="#" class="regular-text">' +
+                        '</div>' +
+                        '<div class="novastudio-form-group">' +
+                            '<label>Icono</label>' +
+                            '<input type="text" name="menu_items[' + itemIndex + '][icon]" value="dashicons-admin-generic" class="regular-text">' +
+                        '</div>' +
+                        '<div class="novastudio-submenu-container">' +
+                            '<h4>Elementos de Submenú</h4>' +
+                            '<div class="novastudio-submenu-items"></div>' +
+                            '<input type="hidden" class="novastudio-submenu-order" name="menu_items[' + itemIndex + '][submenu_order]" value="[]">' +
+                            '<button type="button" class="button novastudio-add-submenu-item">Agregar Elemento de Submenú</button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            
+            // Agregar el elemento al contenedor
+            $('.novastudio-menu-items').append(itemTemplate);
+            
+            // Actualizar orden
+            this.updateMenuOrder();
+        },
+        
+        /**
+         * Agrega un nuevo elemento de submenú
+         * 
+         * @param {jQuery} $parentItem Elemento padre
+         */
+        addSubmenuItem: function($parentItem) {
+            var parentIndex = $parentItem.index();
+            var itemId = 'submenu-item-' + Date.now();
+            var itemIndex = $parentItem.find('.novastudio-submenu-item').length;
+            
+            var itemTemplate = 
+                '<div class="novastudio-menu-item novastudio-submenu-item" data-id="' + itemId + '">' +
+                    '<div class="novastudio-menu-item-header">' +
+                        '<span class="novastudio-menu-item-title">Nuevo Subelemento</span>' +
+                        '<div class="novastudio-menu-item-actions">' +
+                            '<button type="button" class="button button-small novastudio-menu-item-toggle">Editar</button>' +
+                            '<button type="button" class="button button-small novastudio-remove-menu-item">Eliminar</button>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="novastudio-menu-item-content">' +
+                        '<input type="hidden" name="menu_items[' + parentIndex + '][submenu][' + itemIndex + '][id]" value="' + itemId + '">' +
+                        '<input type="hidden" class="novastudio-menu-item-order" name="menu_items[' + parentIndex + '][submenu][' + itemIndex + '][order]" value="' + itemIndex + '">' +
+                        '<div class="novastudio-form-group">' +
+                            '<label>Título</label>' +
+                            '<input type="text" name="menu_items[' + parentIndex + '][submenu][' + itemIndex + '][title]" value="Nuevo Subelemento" class="regular-text">' +
+                        '</div>' +
+                        '<div class="novastudio-form-group">' +
+                            '<label>URL</label>' +
+                            '<input type="text" name="menu_items[' + parentIndex + '][submenu][' + itemIndex + '][url]" value="#" class="regular-text">' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            
+            // Agregar el elemento al contenedor de submenú
+            $parentItem.find('.novastudio-submenu-items').append(itemTemplate);
+            
+            // Actualizar orden
+            this.updateMenuOrder();
         }
     };
     
-    // Inicializar el admin del plugin
+    // Inicializar el plugin
     NovaStudioAdmin.init();
     
 })(jQuery);
