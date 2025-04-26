@@ -1,343 +1,329 @@
 /**
- * NovaStudio - Plugin de personalización para WordPress
- * Estilos CSS para el frontend
+ * NovaStudio - Plugin CSS principal
+ * Estilos para el frontend del plugin de personalización
  */
 
 /**
- * Variables CSS globales (estas se sobreescriben dinámicamente desde el plugin)
+ * Variables CSS globales para complementar las del tema
  */
 :root {
-    /* Colores Base */
-    --color-primary: #FF6B6B;
-    --color-secondary: #4ECDC4;
-    --color-accent: #FFE66D;
-    --color-success: #7BC950;
-    --color-warning: #FFA552;
-    --color-error: #F76F8E;
-    --color-dark: #505168;
-    --color-light: #F7F9F9;
-    
-    /* Tipografía */
-    --font-primary: 'Jost', 'Quicksand', sans-serif;
-    --font-secondary: 'Jost', 'Quicksand', sans-serif;
-    --font-size-base: 16px;
-    
-    /* Espaciado */
-    --spacing-base: 1rem;
-    --spacing-small: 0.5rem;
-    --spacing-large: 2rem;
-    
-    /* Bordes y Esquinas */
-    --border-radius-sm: 4px;
-    --border-radius-md: 8px;
-    --border-radius-lg: 12px;
-    --border-width: 2px;
-    
-    /* Sombras (Estilo Neo-Brutalist) */
-    --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.1);
-    --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.1);
-    --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.1);
-    
-    /* Tamaños de Layout */
-    --sidebar-width-expanded: 250px;
-    --sidebar-width-collapsed: 60px;
-    --header-height: 60px;
-    
-    /* Transiciones */
-    --transition-fast: 150ms;
-    --transition-normal: 300ms;
-    --transition-slow: 500ms;
+  --novastudio-primary: var(--color-primary, #FF6B6B);
+  --novastudio-secondary: var(--color-secondary, #4ECDC4);
+  --novastudio-accent: var(--color-accent, #FFE66D);
+  --novastudio-shadow: var(--shadow-md, 6px 6px 0 rgba(0, 0, 0, 0.1));
+  --novastudio-border-radius: var(--border-radius-lg, 8px);
+  --novastudio-border-width: var(--border-width, 2px);
 }
 
 /**
- * Modo Oscuro - Variables CSS
- * Estas variables serán sobreescritas con los valores personalizados
- */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --color-background: #2A2D45;
-        --color-text: #E0E0E0;
-        --color-border: #3F4577;
-        --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.3);
-        --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.3);
-        --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.3);
-    }
-}
-
-/* Control manual para temas oscuros/claros */
-html.light-mode {
-    --color-background: #F7F9F9;
-    --color-text: #505168;
-    --color-border: #E0E0E0;
-    --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.1);
-    --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.1);
-    --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.1);
-}
-
-html.dark-mode {
-    --color-background: #2A2D45;
-    --color-text: #E0E0E0;
-    --color-border: #3F4577;
-    --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.3);
-    --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.3);
-}
-
-/**
- * Estilos Básicos para Componentes UI
- * Estos estilos se pueden personalizar desde el panel del plugin
+ * Componentes Neo-Brutalist específicos para interacciones del plugin
  */
 
-/* Botones */
-.saas-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    font-family: var(--font-primary);
-    border-radius: var(--border-radius-md);
-    border: var(--border-width) solid transparent;
-    cursor: pointer;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-    text-decoration: none;
+/* Botones de estilo Neo-Brutalist */
+.novastudio-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-family: var(--font-primary, 'Jost', 'Quicksand', sans-serif);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+  border: var(--novastudio-border-width) solid;
+  border-radius: var(--novastudio-border-radius);
+  cursor: pointer;
+  transition: transform 150ms, box-shadow 150ms;
+  position: relative;
+  white-space: nowrap;
 }
 
-.saas-btn:hover {
-    transform: translateY(-2px);
+.novastudio-btn:hover {
+  transform: translateY(-2px);
 }
 
-.saas-btn-primary {
-    background-color: var(--color-primary);
-    color: #ffffff;
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
+.novastudio-btn:active {
+  transform: translateY(0);
 }
 
-.saas-btn-primary:hover {
-    box-shadow: var(--shadow-md);
+.novastudio-btn-primary {
+  background-color: var(--novastudio-primary);
+  border-color: var(--novastudio-primary);
+  color: white;
+  box-shadow: var(--novastudio-shadow);
 }
 
-.saas-btn-secondary {
-    background-color: var(--color-secondary);
-    color: #ffffff;
-    border-color: var(--color-secondary);
-    box-shadow: var(--shadow-sm);
+.novastudio-btn-secondary {
+  background-color: var(--novastudio-secondary);
+  border-color: var(--novastudio-secondary);
+  color: white;
+  box-shadow: var(--novastudio-shadow);
 }
 
-.saas-btn-secondary:hover {
-    box-shadow: var(--shadow-md);
+.novastudio-btn-accent {
+  background-color: var(--novastudio-accent);
+  border-color: var(--novastudio-accent);
+  color: #333;
+  box-shadow: var(--novastudio-shadow);
 }
 
-.saas-btn-outline {
-    background-color: transparent;
-    color: var(--color-primary);
-    border-color: var(--color-primary);
+/* Tarjetas Neo-Brutalist */
+.novastudio-card {
+  background-color: white;
+  border: var(--novastudio-border-width) solid #e2e8f0;
+  border-radius: var(--novastudio-border-radius);
+  box-shadow: var(--novastudio-shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: transform 300ms, box-shadow 300ms;
 }
 
-.saas-btn-outline:hover {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
+.novastudio-card-interactive {
+  cursor: pointer;
 }
 
-/* Tarjetas/Cards */
-.saas-card {
-    background-color: var(--color-background);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-md);
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-    overflow: hidden;
+.novastudio-card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.1);
 }
 
-.saas-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+/* Contenedor del editor de tema */
+.novastudio-theme-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
-.saas-card-header {
-    padding: 1rem;
-    border-bottom: var(--border-width) solid var(--color-border);
-    font-weight: 600;
+.novastudio-editor-section {
+  flex: 1 1 300px;
 }
 
-.saas-card-body {
-    padding: 1rem;
+.novastudio-editor-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text, #505168);
 }
 
-.saas-card-footer {
-    padding: 1rem;
-    border-top: var(--border-width) solid var(--color-border);
+/* Paletas de colores */
+.novastudio-color-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Formularios */
-.saas-form-group {
-    margin-bottom: 1rem;
+.novastudio-color-item {
+  height: 70px;
+  border-radius: var(--novastudio-border-radius);
+  border: var(--novastudio-border-width) solid #e2e8f0;
+  cursor: pointer;
+  transition: transform 150ms;
 }
 
-.saas-form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    font-family: var(--font-primary);
+.novastudio-color-item:hover {
+  transform: scale(1.05);
 }
 
-.saas-form-control {
-    width: 100%;
-    padding: 0.5rem;
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--border-radius-md);
-    background-color: var(--color-background);
-    color: var(--color-text);
-    font-family: var(--font-primary);
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+.novastudio-color-item.active {
+  border-color: var(--novastudio-primary);
+  box-shadow: 0 0 0 2px var(--novastudio-primary);
 }
 
-.saas-form-control:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+/* Presets de tema */
+.novastudio-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
-/* Selectores de Tema */
-.saas-theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: var(--border-width) solid var(--color-border);
-    background-color: var(--color-background);
-    color: var(--color-text);
-    cursor: pointer;
-    transition: background-color var(--transition-fast), color var(--transition-fast);
+.novastudio-preset-card {
+  border: var(--novastudio-border-width) solid #e2e8f0;
+  border-radius: var(--novastudio-border-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 150ms, box-shadow 150ms;
 }
 
-.saas-theme-toggle:hover {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
+.novastudio-preset-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--novastudio-shadow);
 }
 
-/* Animaciones */
-@keyframes saas-fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.novastudio-preset-preview {
+  height: 120px;
+  display: flex;
+  flex-direction: column;
 }
 
-@keyframes saas-slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.novastudio-preset-header {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
 }
 
-/* Utilidades */
-.saas-shadow-sm {
-    box-shadow: var(--shadow-sm);
+.novastudio-preset-content {
+  flex: 1;
+  display: flex;
+  padding: 0.5rem;
 }
 
-.saas-shadow-md {
-    box-shadow: var(--shadow-md);
+.novastudio-preset-sidebar {
+  width: 24px;
+  height: 100%;
+  margin-right: 0.5rem;
 }
 
-.saas-shadow-lg {
-    box-shadow: var(--shadow-lg);
+.novastudio-preset-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.saas-rounded-sm {
-    border-radius: var(--border-radius-sm);
+.novastudio-preset-colors {
+  display: flex;
+  gap: 5px;
+  padding: 0.5rem;
 }
 
-.saas-rounded-md {
-    border-radius: var(--border-radius-md);
+.novastudio-preset-colors span {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
 }
 
-.saas-rounded-lg {
-    border-radius: var(--border-radius-lg);
+.novastudio-preset-name {
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text, #505168);
 }
 
-/* Estilos específicos para integraciones de plugins */
-
-/* Integración con Chat IA */
-.saas-chat-bubble {
-    display: flex;
-    margin-bottom: 1rem;
+/* Controles de formulario estilizados */
+.novastudio-control {
+  margin-bottom: 1rem;
 }
 
-.saas-chat-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--border-radius-md);
-    background-color: var(--color-primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    margin-right: 0.5rem;
+.novastudio-control-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text, #505168);
 }
 
-.saas-chat-message {
-    max-width: 80%;
-    padding: 0.75rem 1rem;
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
+.novastudio-input {
+  width: 100%;
+  padding: 0.625rem;
+  border: var(--novastudio-border-width) solid #e2e8f0;
+  border-radius: var(--novastudio-border-radius);
+  background-color: white;
+  transition: border-color 150ms, box-shadow 150ms;
 }
 
-.saas-chat-user .saas-chat-message {
-    background-color: rgba(var(--color-primary-rgb), 0.1);
-    border: var(--border-width) solid rgba(var(--color-primary-rgb), 0.2);
-    margin-left: auto;
+.novastudio-input:focus {
+  border-color: var(--novastudio-primary);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+  outline: none;
 }
 
-.saas-chat-ai .saas-chat-message {
-    background-color: rgba(var(--color-secondary-rgb), 0.1);
-    border: var(--border-width) solid rgba(var(--color-secondary-rgb), 0.2);
+.novastudio-select {
+  display: block;
+  width: 100%;
+  padding: 0.625rem;
+  border: var(--novastudio-border-width) solid #e2e8f0;
+  border-radius: var(--novastudio-border-radius);
+  background-color: white;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23505168' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.625rem center;
+  background-size: 16px;
 }
 
-/* Integración con Quick Links */
-.saas-quicklink-card {
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--border-radius-md);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-md);
-    display: flex;
-    align-items: center;
+.novastudio-select:focus {
+  border-color: var(--novastudio-primary);
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+  outline: none;
 }
 
-.saas-quicklink-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--border-radius-md);
-    background-color: var(--color-accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
+/* Personalización de componentes estándar */
+.novastudio-customize .nova-card,
+.novastudio-customize .nova-btn,
+.novastudio-customize .nova-input {
+  margin-bottom: 1rem;
 }
 
-.saas-quicklink-info {
-    flex: 1;
+/* Pestañas de configuración */
+.novastudio-tabs {
+  display: flex;
+  border-bottom: var(--novastudio-border-width) solid #e2e8f0;
+  margin-bottom: 1.5rem;
 }
 
-.saas-quicklink-title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+.novastudio-tab {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-light, #718096);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color 150ms, border-color 150ms;
 }
 
-.saas-quicklink-stats {
-    font-size: 0.875rem;
-    color: rgba(var(--color-text-rgb), 0.6);
+.novastudio-tab:hover {
+  color: var(--color-text, #505168);
 }
 
-.saas-quicklink-actions {
-    margin-left: 1rem;
+.novastudio-tab.active {
+  color: var(--novastudio-primary);
+  border-bottom-color: var(--novastudio-primary);
+}
+
+/* Tema oscuro */
+.dark-mode .novastudio-card {
+  background-color: #343A5E;
+  border-color: #3F4577;
+}
+
+.dark-mode .novastudio-input,
+.dark-mode .novastudio-select {
+  background-color: #2A2D45;
+  border-color: #3F4577;
+  color: #E0E0E0;
+}
+
+.dark-mode .novastudio-color-item {
+  border-color: #3F4577;
+}
+
+.dark-mode .novastudio-preset-card {
+  border-color: #3F4577;
+}
+
+.dark-mode .novastudio-tabs {
+  border-bottom-color: #3F4577;
+}
+
+.dark-mode .novastudio-editor-title,
+.dark-mode .novastudio-control-label,
+.dark-mode .novastudio-preset-name {
+  color: #E0E0E0;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .novastudio-theme-editor {
+    flex-direction: column;
+  }
+  
+  .novastudio-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .novastudio-tab {
+    flex: 1 1 auto;
+    text-align: center;
+  }
 }
