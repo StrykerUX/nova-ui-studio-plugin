@@ -1,536 +1,323 @@
 /**
- * NovaStudio - Plugin JavaScript principal
- * Script para el frontend del plugin de personalización
+ * NovaStudio - Script principal
+ * 
+ * Maneja las funcionalidades básicas del plugin de personalización
  */
-(function() {
-    'use strict';
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Elementos del DOM para personalización de temas
+    const themeToggle = document.querySelector('.theme-toggle');
+    const themePresets = document.querySelectorAll('.theme-preset-option');
+    const colorPickers = document.querySelectorAll('.color-picker');
+    const fontSelectors = document.querySelectorAll('.font-selector');
     
-    // Esperar a que el DOM esté completamente cargado
-    document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar funcionalidad del plugin
-        initNovaStudio();
-    });
-    
-    /**
-     * Inicializar todas las funcionalidades del plugin
-     */
-    function initNovaStudio() {
-        // Detectar si el tema NovaUI está activo
-        const isNovaUIActive = document.body.classList.contains('theme-nova-ui') || 
-                              document.querySelector('style[id^="nova-ui"]') !== null;
-        
-        if (!isNovaUIActive) {
-            console.warn('NovaStudio: El tema NovaUI no parece estar activo. Algunas funcionalidades pueden no estar disponibles.');
-        }
-        
-        // Inicializar componentes del plugin
-        initThemeToggle();
-        initPresetSelectors();
-        initLivePreview();
-        
-        // Si estamos en una página de administración
-        if (document.body.classList.contains('wp-admin')) {
-            initAdminFeatures();
-        }
-    }
-    
-    /**
-     * Inicializar el toggle de tema claro/oscuro
-     */
-    function initThemeToggle() {
-        const toggles = document.querySelectorAll('.novastudio-theme-toggle, .saas-dark-mode-toggle');
-        
-        toggles.forEach(toggle => {
-            // Si ya tiene listener, no agregar otro
-            if (toggle.getAttribute('data-initialized') === 'true') return;
+    // Toggle del tema claro/oscuro
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            document.documentElement.classList.toggle('dark-mode');
             
-            toggle.addEventListener('click', function() {
-                document.documentElement.classList.toggle('dark-mode');
-                
-                // Guardar preferencia en localStorage
-                const isDarkMode = document.documentElement.classList.contains('dark-mode');
-                localStorage.setItem('novauiDarkMode', isDarkMode ? 'dark' : 'light');
-                
-                // Si window.novaUIDarkMode existe (definido en el tema), usarlo
-                if (window.novaUIDarkMode && typeof window.novaUIDarkMode.toggle === 'function') {
-                    window.novaUIDarkMode.toggle();
-                }
-            });
+            // Guardar preferencia
+            const isDarkMode = document.documentElement.classList.contains('dark-mode');
+            localStorage.setItem('novaui_dark_mode', isDarkMode ? 'dark' : 'light');
             
-            // Marcar como inicializado
-            toggle.setAttribute('data-initialized', 'true');
+            // Si está en un iframe para vista previa, enviar mensaje al padre
+            if (window.parent && window !== window.parent) {
+                window.parent.postMessage({
+                    action: 'themeChange',
+                    theme: isDarkMode ? 'dark' : 'light'
+                }, '*');
+            }
         });
     }
     
-    /**
-     * Inicializar selectores de presets de tema
-     */
-    function initPresetSelectors() {
-        const presetItems = document.querySelectorAll('.novastudio-preset-card, .novastudio-preset-item');
-        
-        presetItems.forEach(item => {
-            item.addEventListener('click', function() {
-                const presetName = this.getAttribute('data-preset');
-                if (!presetName) return;
+    // Selección de presets de tema
+    if (themePresets && themePresets.length > 0) {
+        themePresets.forEach(preset => {
+            preset.addEventListener('click', function() {
+                const presetId = this.dataset.preset;
                 
-                // Aplicar el preset seleccionado
-                applyPreset(presetName);
+                // Eliminar clase activa de todos los presets
+                themePresets.forEach(p => p.classList.remove('active'));
                 
-                // Marcar este preset como activo
-                document.querySelectorAll('.novastudio-preset-card.active, .novastudio-preset-item.active')
-                    .forEach(activeItem => activeItem.classList.remove('active'));
+                // Añadir clase activa al preset seleccionado
                 this.classList.add('active');
+                
+                // Aplicar los valores del preset
+                applyPreset(presetId);
             });
         });
     }
     
-    /**
-     * Aplicar un preset de tema
-     * @param {string} presetName - Nombre del preset a aplicar
-     */
-    function applyPreset(presetName) {
-        // Valores de presets predefinidos
+    // Función para aplicar un preset de tema
+    function applyPreset(presetId) {
+        let presetValues = {};
+        
+        // Presets predefinidos
         const presets = {
             'default': {
-                primary: '#FF6B6B',
-                secondary: '#4ECDC4',
-                accent: '#FFE66D',
-                success: '#7BC950',
-                warning: '#FFA552',
-                error: '#F76F8E'
+                '--color-primary': '#FF6B6B',
+                '--color-secondary': '#4ECDC4',
+                '--color-accent': '#FFE66D',
+                '--font-primary': "'Jost', 'Quicksand', sans-serif",
             },
-            'calm': {
-                primary: '#6B9BFF',
-                secondary: '#4ECDC4',
-                accent: '#C3E88D',
-                success: '#7BC950',
-                warning: '#FFA552',
-                error: '#F76F8E'
+            'ocean': {
+                '--color-primary': '#3498db',
+                '--color-secondary': '#1abc9c',
+                '--color-accent': '#f1c40f',
+                '--font-primary': "'Montserrat', sans-serif",
             },
-            'vibrant': {
-                primary: '#FF6E9C',
-                secondary: '#8A7AFF',
-                accent: '#FFC53D',
-                success: '#7BC950',
-                warning: '#FFA552',
-                error: '#F76F8E'
+            'forest': {
+                '--color-primary': '#27ae60',
+                '--color-secondary': '#2ecc71',
+                '--color-accent': '#f39c12',
+                '--font-primary': "'Poppins', sans-serif",
             },
-            'earthy': {
-                primary: '#E07A5F',
-                secondary: '#81B29A',
-                accent: '#F2CC8F',
-                success: '#7BC950',
-                warning: '#FFA552',
-                error: '#F76F8E'
+            'sunset': {
+                '--color-primary': '#e74c3c',
+                '--color-secondary': '#f39c12',
+                '--color-accent': '#9b59b6',
+                '--font-primary': "'Roboto', sans-serif",
             }
         };
         
-        // Si el preset no existe, no hacer nada
-        if (!presets[presetName]) {
-            console.warn(`NovaStudio: Preset "${presetName}" no encontrado.`);
-            return;
-        }
-        
-        // Aplicar valores del preset a los campos del formulario
-        const preset = presets[presetName];
-        Object.keys(preset).forEach(key => {
-            const input = document.getElementById(`color_${key}`);
-            if (input) {
-                input.value = preset[key];
-                // Si es un color picker, actualizar la visualización
-                if (input.classList.contains('novastudio-color-field') && window.wpColorPicker) {
-                    jQuery(input).wpColorPicker('color', preset[key]);
-                }
+        if (presets[presetId]) {
+            presetValues = presets[presetId];
+            
+            // Aplicar valores de CSS
+            for (const [property, value] of Object.entries(presetValues)) {
+                document.documentElement.style.setProperty(property, value);
             }
-        });
-        
-        // Actualizar variable de preset activo
-        document.documentElement.style.setProperty('--current-preset', presetName);
-        
-        // Si hay vista previa en tiempo real, actualizar
-        updateLivePreview(preset);
+            
+            // Actualizar los controles de color
+            updateColorControls(presetValues);
+            
+            // Si está en modo admin, guardar los cambios
+            if (typeof saveCustomizationSettings === 'function') {
+                saveCustomizationSettings(presetValues);
+            }
+        }
     }
     
-    /**
-     * Inicializar vista previa en tiempo real
-     */
-    function initLivePreview() {
-        // Seleccionar todos los inputs de color
-        const colorInputs = document.querySelectorAll('.novastudio-color-field, [id^="color_"]');
-        
-        // Agregar listeners para actualizar la vista previa
-        colorInputs.forEach(input => {
-            // Para inputs normales
-            input.addEventListener('input', function() {
-                const colorType = this.id.replace('color_', '');
-                const color = this.value;
-                
-                // Actualizar CSS variable directamente
-                document.documentElement.style.setProperty(`--color-${colorType}`, color);
-                
-                // Actualizar vista previa
-                const previewElements = document.querySelectorAll(`.preview-${colorType}`);
-                previewElements.forEach(el => {
-                    el.style.backgroundColor = color;
-                });
+    // Actualizar los controles de color según valores aplicados
+    function updateColorControls(values) {
+        if (colorPickers && colorPickers.length > 0) {
+            colorPickers.forEach(picker => {
+                const property = picker.dataset.cssProperty;
+                if (values[property]) {
+                    picker.value = convertToHex(values[property]);
+                }
             });
-            
-            // Para WP Color Picker (si está disponible)
-            if (window.wpColorPicker && jQuery) {
-                jQuery(input).on('wpColorPicker:change', function(event, ui) {
-                    const colorType = event.target.id.replace('color_', '');
-                    const color = ui.color.toString();
-                    
-                    // Actualizar CSS variable directamente
-                    document.documentElement.style.setProperty(`--color-${colorType}`, color);
-                    
-                    // Actualizar vista previa
-                    const previewElements = document.querySelectorAll(`.preview-${colorType}`);
-                    previewElements.forEach(el => {
-                        el.style.backgroundColor = color;
-                    });
-                });
-            }
-        });
+        }
         
-        // Inicializar iframe de vista previa
-        const previewIframe = document.getElementById('novastudio-preview-iframe');
-        if (previewIframe) {
-            previewIframe.addEventListener('load', function() {
-                // Cuando el iframe se carga, crear una función para actualizar sus estilos
-                window.updatePreviewIframe = function(styles) {
-                    try {
-                        const iframeDoc = previewIframe.contentDocument || previewIframe.contentWindow.document;
-                        
-                        // Buscar si ya existe un estilo para novastudio
-                        let styleEl = iframeDoc.getElementById('novastudio-preview-styles');
-                        
-                        if (!styleEl) {
-                            // Si no existe, crear uno nuevo
-                            styleEl = iframeDoc.createElement('style');
-                            styleEl.id = 'novastudio-preview-styles';
-                            iframeDoc.head.appendChild(styleEl);
+        if (fontSelectors && fontSelectors.length > 0) {
+            fontSelectors.forEach(selector => {
+                const property = selector.dataset.cssProperty;
+                if (values[property]) {
+                    // Extraer nombre de fuente principal de la cadena
+                    const fontMatch = values[property].match(/'([^']+)'/);
+                    if (fontMatch && fontMatch[1]) {
+                        for (let i = 0; i < selector.options.length; i++) {
+                            if (selector.options[i].value === fontMatch[1]) {
+                                selector.selectedIndex = i;
+                                break;
+                            }
                         }
-                        
-                        // Actualizar los estilos
-                        styleEl.textContent = styles;
-                    } catch (error) {
-                        console.error('Error al actualizar el iframe de vista previa:', error);
                     }
+                }
+            });
+        }
+    }
+    
+    // Convertir color a formato hexadecimal
+    function convertToHex(color) {
+        // Si ya es hex, devolverlo
+        if (color.startsWith('#')) {
+            return color;
+        }
+        
+        // Si es rgb o rgba, convertir a hex
+        const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
+        if (rgbMatch) {
+            return '#' + 
+                parseInt(rgbMatch[1]).toString(16).padStart(2, '0') +
+                parseInt(rgbMatch[2]).toString(16).padStart(2, '0') +
+                parseInt(rgbMatch[3]).toString(16).padStart(2, '0');
+        }
+        
+        return color;
+    }
+    
+    // Cambios en selectores de color
+    if (colorPickers && colorPickers.length > 0) {
+        colorPickers.forEach(picker => {
+            picker.addEventListener('input', function() {
+                const property = this.dataset.cssProperty;
+                const value = this.value;
+                
+                // Aplicar el cambio de color
+                document.documentElement.style.setProperty(property, value);
+                
+                // Si está en modo admin, guardar los cambios
+                if (typeof saveCustomizationChanges === 'function') {
+                    saveCustomizationChanges(property, value);
+                }
+            });
+        });
+    }
+    
+    // Cambios en selectores de fuente
+    if (fontSelectors && fontSelectors.length > 0) {
+        fontSelectors.forEach(selector => {
+            selector.addEventListener('change', function() {
+                const property = this.dataset.cssProperty;
+                const fontName = this.value;
+                let fontStack = '';
+                
+                // Establecer stack de fuentes según selección
+                switch (fontName) {
+                    case 'Jost':
+                        fontStack = "'Jost', 'Quicksand', sans-serif";
+                        break;
+                    case 'Montserrat':
+                        fontStack = "'Montserrat', 'Roboto', sans-serif";
+                        break;
+                    case 'Roboto':
+                        fontStack = "'Roboto', 'Arial', sans-serif";
+                        break;
+                    case 'Poppins':
+                        fontStack = "'Poppins', 'Open Sans', sans-serif";
+                        break;
+                    case 'Open Sans':
+                        fontStack = "'Open Sans', 'Helvetica', sans-serif";
+                        break;
+                    default:
+                        fontStack = `'${fontName}', sans-serif`;
+                }
+                
+                // Aplicar el cambio de fuente
+                document.documentElement.style.setProperty(property, fontStack);
+                
+                // Si está en modo admin, guardar los cambios
+                if (typeof saveCustomizationChanges === 'function') {
+                    saveCustomizationChanges(property, fontStack);
+                }
+            });
+        });
+    }
+    
+    // Vista previa en tiempo real
+    const previewFrame = document.getElementById('novastudio-preview');
+    if (previewFrame) {
+        // Sincronizar cambios con el iframe de vista previa
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.action === 'ready') {
+                const styleData = {
+                    action: 'updateStyles',
+                    styles: getCSSVariables()
                 };
-            });
-        }
-    }
-    
-    /**
-     * Actualizar la vista previa en tiempo real
-     * @param {Object} styles - Objeto con los estilos a aplicar
-     */
-    function updateLivePreview(styles) {
-        if (!styles) return;
-        
-        // Crear CSS para aplicar al documento principal y al iframe
-        let cssText = `:root {\n`;
-        
-        // Agregar cada variable CSS
-        Object.keys(styles).forEach(key => {
-            cssText += `  --color-${key}: ${styles[key]};\n`;
-        });
-        
-        cssText += `}\n`;
-        
-        // Aplicar al iframe si existe la función
-        if (window.updatePreviewIframe) {
-            window.updatePreviewIframe(cssText);
-        }
-        
-        // Aplicar al documento principal
-        Object.keys(styles).forEach(key => {
-            document.documentElement.style.setProperty(`--color-${key}`, styles[key]);
-        });
-    }
-    
-    /**
-     * Inicializar características específicas de administración
-     */
-    function initAdminFeatures() {
-        // Media Uploader para logos
-        initMediaUploader();
-        
-        // Editor de CSS
-        initCSSEditor();
-        
-        // Gestión de menús
-        initMenuManager();
-        
-        // Submit del formulario con AJAX
-        initAjaxForm();
-    }
-    
-    /**
-     * Inicializar Media Uploader para selección de imágenes
-     */
-    function initMediaUploader() {
-        // Verificar si están las dependencias de WordPress
-        if (!window.wp || !window.wp.media || !jQuery) return;
-        
-        // Seleccionar todos los botones de upload
-        const uploadButtons = document.querySelectorAll('.novastudio-upload-button');
-        
-        uploadButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Obtener el input y la vista previa relacionados
-                const wrapper = this.closest('.novastudio-media-uploader');
-                if (!wrapper) return;
-                
-                const input = wrapper.querySelector('input[type="text"]');
-                const preview = wrapper.querySelector('.novastudio-image-preview');
-                
-                // Crear frame de media
-                const frame = wp.media({
-                    title: 'Seleccionar o subir imagen',
-                    button: {
-                        text: 'Usar esta imagen'
-                    },
-                    multiple: false
-                });
-                
-                // Cuando se selecciona una imagen
-                frame.on('select', function() {
-                    const attachment = frame.state().get('selection').first().toJSON();
-                    
-                    // Actualizar input con la URL
-                    if (input) {
-                        input.value = attachment.url;
-                    }
-                    
-                    // Actualizar vista previa
-                    if (preview) {
-                        preview.innerHTML = `<img src="${attachment.url}" alt="Preview" />`;
-                    }
-                });
-                
-                // Abrir el selector de media
-                frame.open();
-            });
-        });
-    }
-    
-    /**
-     * Inicializar editor de CSS personalizado
-     */
-    function initCSSEditor() {
-        // Verificar si existe el editor de código de WordPress
-        if (!window.wp || !window.wp.codeEditor) return;
-        
-        // Seleccionar el textarea de CSS personalizado
-        const customCSSField = document.getElementById('custom_css');
-        if (!customCSSField) return;
-        
-        // Verificar si ya está inicializado
-        if (customCSSField.getAttribute('data-editor-initialized') === 'true') return;
-        
-        // Inicializar editor
-        const editorSettings = wp.codeEditor.defaultSettings ? 
-            Object.assign({}, wp.codeEditor.defaultSettings) : 
-            { codemirror: { mode: 'css' } };
-            
-        editorSettings.codemirror.mode = 'css';
-        editorSettings.codemirror.theme = document.documentElement.classList.contains('dark-mode') ? 
-            'dark' : 'default';
-            
-        const editor = wp.codeEditor.initialize(customCSSField, editorSettings);
-        
-        // Marcar como inicializado
-        customCSSField.setAttribute('data-editor-initialized', 'true');
-        
-        // Ejemplo de código para insertarse
-        const codeExamples = document.querySelectorAll('.novastudio-insert-css');
-        codeExamples.forEach(button => {
-            button.addEventListener('click', function() {
-                const example = this.previousElementSibling;
-                if (!example || !example.textContent) return;
-                
-                // Insertar el ejemplo en el editor
-                editor.codemirror.replaceSelection(example.textContent);
-                editor.codemirror.focus();
-            });
-        });
-    }
-    
-    /**
-     * Inicializar gestor de menús y elementos de navegación
-     */
-    function initMenuManager() {
-        // Verificar si jQuery y jQuery UI están disponibles
-        if (!jQuery || !jQuery.ui || !jQuery.ui.sortable) return;
-        
-        // Inicializar sortable para arrastrar y soltar elementos
-        jQuery('.novastudio-menu-items').sortable({
-            items: '> .novastudio-menu-item',
-            handle: '.novastudio-menu-item-handle',
-            update: function() {
-                // Actualizar números de orden
-                jQuery(this).find('.novastudio-menu-item').each(function(index) {
-                    jQuery(this).find('input[name*="[order]"]').val(index);
-                });
+                previewFrame.contentWindow.postMessage(styleData, '*');
             }
         });
         
-        // Botón para agregar nuevo elemento
-        const addButton = document.getElementById('novastudio-add-menu-item');
-        if (addButton) {
-            addButton.addEventListener('click', function() {
-                const template = document.getElementById('novastudio-menu-item-template');
-                if (!template) return;
-                
-                const container = document.querySelector('.novastudio-menu-items');
-                if (!container) return;
-                
-                // Clonar la plantilla
-                const newItem = template.content.cloneNode(true);
-                
-                // Generar ID único
-                const uniqueId = 'item_' + Date.now();
-                const inputs = newItem.querySelectorAll('input, select');
-                inputs.forEach(input => {
-                    const name = input.getAttribute('name');
-                    if (name) {
-                        input.setAttribute('name', name.replace('[TEMPLATE]', `[${uniqueId}]`));
-                    }
-                });
-                
-                // Asignar número de orden
-                const orderInput = newItem.querySelector('input[name*="[order]"]');
-                if (orderInput) {
-                    orderInput.value = container.children.length;
-                }
-                
-                // Agregar a la lista
-                container.appendChild(newItem);
-                
-                // Reinicializar sortable
-                jQuery('.novastudio-menu-items').sortable('refresh');
+        // Obtener todas las variables CSS aplicadas actualmente
+        function getCSSVariables() {
+            const styles = {};
+            const root = document.documentElement;
+            const computedStyle = getComputedStyle(root);
+            
+            // Lista de propiedades a sincronizar
+            const properties = [
+                '--color-primary',
+                '--color-secondary',
+                '--color-accent',
+                '--color-success',
+                '--color-warning',
+                '--color-error',
+                '--font-primary',
+                '--font-secondary',
+                '--border-radius-lg',
+                '--shadow-md'
+            ];
+            
+            properties.forEach(prop => {
+                styles[prop] = computedStyle.getPropertyValue(prop).trim();
             });
+            
+            // Añadir modo oscuro/claro
+            styles['dark-mode'] = root.classList.contains('dark-mode');
+            
+            return styles;
         }
-        
-        // Botones para eliminar elementos
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('novastudio-remove-menu-item')) {
-                const item = e.target.closest('.novastudio-menu-item');
-                if (item) {
-                    item.remove();
-                    
-                    // Actualizar números de orden
-                    jQuery('.novastudio-menu-items .novastudio-menu-item').each(function(index) {
-                        jQuery(this).find('input[name*="[order]"]').val(index);
-                    });
-                }
-            }
-        });
-        
-        // Toggle para mostrar/ocultar opciones del elemento
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('novastudio-toggle-item-options')) {
-                const item = e.target.closest('.novastudio-menu-item');
-                if (item) {
-                    const content = item.querySelector('.novastudio-menu-item-content');
-                    if (content) {
-                        content.classList.toggle('open');
-                        e.target.setAttribute('aria-expanded', content.classList.contains('open'));
-                    }
-                }
-            }
-        });
     }
     
-    /**
-     * Inicializar formulario con envío AJAX
-     */
-    function initAjaxForm() {
-        // Verificar si jQuery está disponible
-        if (!jQuery) return;
-        
-        // Seleccionar el formulario
-        const form = document.getElementById('novastudio-options-form');
-        if (!form) return;
-        
-        // Botón para restablecer configuración
-        const resetButton = document.getElementById('novastudio-reset-settings');
-        if (resetButton) {
-            resetButton.addEventListener('click', function() {
-                if (!confirm('¿Estás seguro de que deseas restablecer todas las configuraciones a sus valores predeterminados? Esta acción no se puede deshacer.')) {
-                    return;
-                }
-                
-                // Enviar solicitud AJAX para restablecer
-                jQuery.ajax({
-                    url: novaStudioAdmin.ajaxUrl,
-                    type: 'POST',
-                    data: {
-                        action: 'novastudio_reset_settings',
-                        nonce: novaStudioAdmin.nonce
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert(response.data.message);
-                            // Recargar la página
-                            location.reload();
-                        } else {
-                            alert(response.data.message || 'Error al restablecer la configuración.');
-                        }
-                    },
-                    error: function() {
-                        alert('Error de conexión al intentar restablecer la configuración.');
-                    }
-                });
-            });
+    // Inicializar tema según preferencias guardadas
+    function initTheme() {
+        // Estado del tema
+        const darkMode = localStorage.getItem('novaui_dark_mode');
+        if (darkMode === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        } else if (darkMode === 'light') {
+            document.documentElement.classList.remove('dark-mode');
+        } else {
+            // Si no hay preferencia guardada, usar preferencia del sistema
+            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDarkMode) {
+                document.documentElement.classList.add('dark-mode');
+            }
         }
-        
-        // Submit del formulario con AJAX
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Mostrar indicador de carga
-            form.classList.add('is-submitting');
-            
-            // Enviar formulario con AJAX
-            jQuery.ajax({
-                url: novaStudioAdmin.ajaxUrl,
-                type: 'POST',
-                data: jQuery(form).serialize() + '&action=novastudio_save_settings',
-                success: function(response) {
-                    form.classList.remove('is-submitting');
-                    
-                    if (response.success) {
-                        // Mostrar mensaje de éxito
-                        const successMessage = document.createElement('div');
-                        successMessage.className = 'notice notice-success is-dismissible';
-                        successMessage.innerHTML = `<p>${response.data.message}</p>`;
-                        
-                        const heading = form.querySelector('h2');
-                        if (heading) {
-                            heading.parentNode.insertBefore(successMessage, heading.nextSibling);
-                        } else {
-                            form.parentNode.insertBefore(successMessage, form);
-                        }
-                        
-                        // Actualizar iframe de vista previa
-                        const previewIframe = document.getElementById('novastudio-preview-iframe');
-                        if (previewIframe) {
-                            previewIframe.contentWindow.location.reload();
-                        }
-                    } else {
-                        alert(response.data.message || 'Error al guardar la configuración.');
-                    }
-                },
-                error: function() {
-                    form.classList.remove('is-submitting');
-                    alert('Error de conexión al intentar guardar la configuración.');
-                }
-            });
-        });
     }
-})();
+    
+    // Iniciar
+    initTheme();
+});
+
+// Función auxiliar para la Página de Ejemplo-random
+function setupExamplePage() {
+    // Solo ejecutar en la página Ejemplo-random
+    if (!document.body.classList.contains('page-template-ejemplo-random') && 
+        !document.body.classList.contains('page-id-ejemplo-random')) {
+        return;
+    }
+    
+    console.log('Inicializando página de ejemplo NovaUI...');
+    
+    // Añadir efectos visuales a los botones
+    const buttons = document.querySelectorAll('.neo-button');
+    buttons.forEach(button => {
+        // Efecto de presión al hacer clic
+        button.addEventListener('mousedown', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '2px 2px 0 rgba(0, 0, 0, 0.1)';
+        });
+        
+        // Restaurar al soltar
+        button.addEventListener('mouseup', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '6px 6px 0 rgba(0, 0, 0, 0.1)';
+        });
+        
+        // También restaurar si el mouse sale del botón
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+            this.style.boxShadow = '';
+        });
+    });
+    
+    // Añadir efecto de hover a las tarjetas
+    const cards = document.querySelectorAll('.neo-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '8px 8px 0 rgba(0, 0, 0, 0.1)';
+            this.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = '';
+            this.style.boxShadow = '';
+        });
+    });
+}
+
+// Ejecutar setupExamplePage cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', setupExamplePage);
