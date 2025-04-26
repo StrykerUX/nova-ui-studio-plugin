@@ -147,15 +147,79 @@ class NovaStudio {
      * Inicializar los shortcodes
      */
     private function init_shortcodes() {
-        // Incluir archivos de shortcodes si existen
-        $shortcode_files = glob( NOVASTUDIO_PLUGIN_DIR . 'includes/shortcodes/*.php' );
-        if ( ! empty( $shortcode_files ) ) {
-            foreach ( $shortcode_files as $file ) {
-                if ( basename( $file ) !== 'index.php' ) {
-                    require_once $file;
+        // Array para rastrear funciones ya declaradas
+        $declared_functions = array();
+        
+        // Incluir el archivo de funciones helpers primero
+        if (file_exists(NOVASTUDIO_PLUGIN_DIR . 'includes/helpers/helpers.php')) {
+            require_once NOVASTUDIO_PLUGIN_DIR . 'includes/helpers/helpers.php';
+        }
+        
+        // Definir orden de carga para archivos con prioridad
+        $priority_files = array(
+            'saas-buttons.php', // Cargar primero los botones para evitar conflictos
+        );
+        
+        // Cargar primero los archivos prioritarios
+        foreach ($priority_files as $priority_file) {
+            $file_path = NOVASTUDIO_PLUGIN_DIR . 'includes/shortcodes/' . $priority_file;
+            if (file_exists($file_path)) {
+                $this->load_shortcode_file($file_path, $declared_functions);
+            }
+        }
+        
+        // Obtener todos los archivos de shortcodes
+        $shortcode_files = glob(NOVASTUDIO_PLUGIN_DIR . 'includes/shortcodes/*.php');
+        if (!empty($shortcode_files)) {
+            foreach ($shortcode_files as $file) {
+                // Omitir archivos de índice y los que ya se cargaron con prioridad
+                $basename = basename($file);
+                if ($basename !== 'index.php' && !in_array($basename, $priority_files)) {
+                    $this->load_shortcode_file($file, $declared_functions);
                 }
             }
         }
+    }
+    
+    /**
+     * Cargar un archivo de shortcode verificando funciones duplicadas
+     *
+     * @param string $file Ruta del archivo a cargar
+     * @param array &$declared_functions Array de funciones ya declaradas
+     */
+    private function load_shortcode_file($file, &$declared_functions) {
+        // Leer el contenido del archivo
+        $file_content = file_get_contents($file);
+        
+        // Buscar todas las declaraciones de funciones
+        preg_match_all('/function\s+([a-zA-Z0-9_]+)\s*\(/m', $file_content, $matches);
+        
+        if (!empty($matches[1])) {
+            $potential_conflicts = false;
+            
+            foreach ($matches[1] as $function_name) {
+                // Si la función ya está declarada, es un conflicto potencial
+                if (in_array($function_name, $declared_functions)) {
+                    error_log('NovaStudio: Posible conflicto de función - ' . $function_name . ' en ' . basename($file));
+                    $potential_conflicts = true;
+                } else {
+                    // Registrar esta función para futuras comprobaciones
+                    $declared_functions[] = $function_name;
+                }
+            }
+            
+            // Si hay conflictos, modificar el archivo (en un entorno de producción
+            // esto podría ser más complejo o mostrar una advertencia en el admin)
+            if ($potential_conflicts) {
+                // En producción, aquí podría hacerse un manejo más sofisticado,
+                // pero por ahora solo registramos un error para que el admin lo vea
+                error_log('NovaStudio: Se encontraron posibles conflictos en ' . basename($file) . 
+                          '. Considere usar nombres de función específicos para evitar colisiones.');
+            }
+        }
+        
+        // Cargar el archivo
+        require_once $file;
     }
     
     /**
