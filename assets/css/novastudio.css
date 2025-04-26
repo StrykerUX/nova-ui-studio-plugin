@@ -1,329 +1,1051 @@
 /**
- * NovaStudio - Plugin CSS principal
- * Estilos para el frontend del plugin de personalización
+ * NovaStudio - Estilos principales
+ * 
+ * Incluye estilos para el plugin de personalización y para el dashboard neo-brutalista
  */
 
-/**
- * Variables CSS globales para complementar las del tema
- */
+/* ======================================
+   Variables CSS - Igual que en NovaUI
+   ====================================== */
 :root {
-  --novastudio-primary: var(--color-primary, #FF6B6B);
-  --novastudio-secondary: var(--color-secondary, #4ECDC4);
-  --novastudio-accent: var(--color-accent, #FFE66D);
-  --novastudio-shadow: var(--shadow-md, 6px 6px 0 rgba(0, 0, 0, 0.1));
-  --novastudio-border-radius: var(--border-radius-lg, 8px);
-  --novastudio-border-width: var(--border-width, 2px);
+  /* Colores principales */
+  --color-primary: #FF6B6B; /* Coral - color principal */
+  --color-secondary: #4ECDC4; /* Teal suave - color secundario */
+  --color-accent: #FFE66D; /* Amarillo cálido - color de acento */
+  
+  /* Colores de estado */
+  --color-success: #7BC950; /* Verde pastel - éxito */
+  --color-warning: #FFA552; /* Naranja suave - advertencia */
+  --color-error: #F76F8E; /* Rosa-rojo suave - error */
+  
+  /* Colores específicos para UI */
+  --color-xp: #8971D0; /* Púrpura - para progreso/XP */
+  --color-energy: #45D09E; /* Verde menta - para recursos */
+  --color-health: #FC6471; /* Rojo suave - para salud */
+  
+  /* Colores de texto y fondo */
+  --color-text: #505168; /* Gris-púrpura oscuro - texto principal */
+  --color-text-light: #718096; /* Gris claro - texto secundario */
+  --color-background: #F7F9F9; /* Blanco hueso - fondo principal */
+  --color-background-alt: #F2F5FA; /* Gris muy claro - fondo alternativo */
+  --color-border: #E2E8F0; /* Gris muy claro - bordes */
+  
+  /* Estados de componentes interactivos */
+  --color-primary-hover: #FF5252; /* Estado hover del color primario */
+  --color-primary-active: #FF3A3A; /* Estado active del color primario */
+  --color-link: #3490DC; /* Color para enlaces */
+  --color-link-hover: #2779BD; /* Color para enlaces en hover */
+  --color-button-text: #FFFFFF; /* Color de texto para botones */
+  --color-button-text-hover: #FFFFFF; /* Color de texto para botones en hover */
+  
+  /* Escala de grises */
+  --color-gray-100: #F7F7F7;
+  --color-gray-200: #E1E1E1;
+  --color-gray-300: #CFCFCF;
+  --color-gray-400: #B1B1B1;
+  --color-gray-500: #9E9E9E;
+  --color-gray-600: #7E7E7E;
+  --color-gray-700: #626262;
+  --color-gray-800: #515151;
+  --color-gray-900: #313131;
+  
+  /* Tipografía */
+  --font-primary: 'Jost', 'Quicksand', sans-serif;
+  --font-secondary: 'Jost', 'Quicksand', sans-serif;
+  --font-monospace: 'Roboto Mono', monospace;
+  
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Espaciado */
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+  --spacing-3xl: 4rem;    /* 64px */
+  
+  /* Layout */
+  --container-width: 1280px;
+  --sidebar-width: 256px;
+  --sidebar-collapsed-width: 80px;
+  --header-height: 64px;
+  
+  /* Bordes y esquinas */
+  --border-radius-sm: 0.125rem; /* 2px */
+  --border-radius-md: 0.25rem;  /* 4px */
+  --border-radius-lg: 0.5rem;   /* 8px */
+  --border-radius-xl: 1rem;     /* 16px */
+  --border-width: 2px;
+  
+  /* Sombras */
+  --shadow-sm: 3px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 6px 6px 0 rgba(0, 0, 0, 0.1); /* Neo-brutalista suave */
+  --shadow-lg: 10px 10px 0 rgba(0, 0, 0, 0.1);
+  --shadow-focus: 0 0 0 3px rgba(79, 205, 196, 0.25);
+  
+  /* Transiciones */
+  --transition-fast: 150ms;
+  --transition-normal: 300ms;
+  --transition-slow: 500ms;
+  
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  
+  /* Componentes específicos */
+  --header-background: var(--color-background);
+  --footer-background: var(--color-background-alt);
+  --sidebar-background: var(--color-background-alt);
+  --card-background: var(--color-background);
+  --card-padding: var(--spacing-md);
+  --card-shadow: var(--shadow-md);
+  --input-background: var(--color-background);
+  --input-border: var(--color-border);
+  --button-padding: 0.5rem 1rem;
+  --nav-item-spacing: var(--spacing-sm);
 }
 
-/**
- * Componentes Neo-Brutalist específicos para interacciones del plugin
- */
+/* Modo Oscuro */
+.dark-mode {
+  --color-text: #E0E0E0;
+  --color-text-light: #A0AEC0;
+  --color-background: #2A2D45;
+  --color-background-alt: #343A5E;
+  --color-border: #3F4577;
+  
+  --color-gray-100: #3F4577;
+  --color-gray-200: #4E56A6;
+  --color-gray-300: #6D76CB;
+  --color-gray-400: #8C95E0;
+  --color-gray-500: #ABB2EB;
+  --color-gray-600: #C9CEF5;
+  --color-gray-700: #E7EAFF;
+  --color-gray-800: #F1F3FF;
+  --color-gray-900: #FFFFFF;
+  
+  --header-background: var(--color-background);
+  --sidebar-background: var(--color-background-alt);
+  --card-background: var(--color-background-alt);
+  --input-background: var(--color-background);
+  --input-border: var(--color-border);
+  
+  /* Sombra para modo oscuro */
+  --shadow-md: 3px 3px 0 rgba(0, 0, 0, 0.3);
+}
 
-/* Botones de estilo Neo-Brutalist */
-.novastudio-btn {
-  display: inline-flex;
+/* ======================================
+   Importar Fuentes desde Google Fonts
+   ====================================== */
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* ======================================
+   Estilos Base
+   ====================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body.novastudio-neo-brutalist {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Contenedor principal */
+.novastudio-container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+/* Helpers para modo oscuro/claro */
+.dark-only {
+  display: none;
+}
+
+.light-only {
+  display: initial;
+}
+
+.dark-mode .dark-only {
+  display: initial;
+}
+
+.dark-mode .light-only {
+  display: none;
+}
+
+/* ======================================
+   Estilos para Dashboard Neo-Brutalista
+   ====================================== */
+
+/* Layout principal del dashboard */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: var(--font-primary);
+  background-color: var(--color-background-alt);
+  color: var(--color-text);
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  transition: width var(--transition-normal);
+  background-color: var(--sidebar-background);
+  border-right: var(--border-width) solid var(--color-border);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  height: 100vh;
+  overflow-y: auto;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.dashboard-sidebar.collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+/* Header del sidebar */
+.dashboard-sidebar-header {
+  padding: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-logo {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-logo-full {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.dashboard-logo-full span {
+  color: var(--color-primary);
+}
+
+.dashboard-logo-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.625rem 1.25rem;
-  font-family: var(--font-primary, 'Jost', 'Quicksand', sans-serif);
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.5;
-  text-decoration: none;
-  border: var(--novastudio-border-width) solid;
-  border-radius: var(--novastudio-border-radius);
-  cursor: pointer;
-  transition: transform 150ms, box-shadow 150ms;
-  position: relative;
-  white-space: nowrap;
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
 }
 
-.novastudio-btn:hover {
+.dashboard-logo-icon svg {
+  color: white;
+}
+
+.sidebar-toggle {
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.dark-mode .sidebar-toggle {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--color-gray-200);
+}
+
+.dark-mode .sidebar-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Menú del Sidebar */
+.dashboard-navigation {
+  margin-top: var(--spacing-xl);
+}
+
+.dashboard-menu {
+  list-style: none;
+  padding: 0 var(--spacing-sm);
+  margin: 0;
+}
+
+.dashboard-menu-item {
+  margin-bottom: var(--spacing-sm);
+}
+
+.dashboard-menu-item a {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  text-decoration: none;
+  color: var(--color-gray-600);
+  transition: all var(--transition-fast);
+}
+
+.dashboard-menu-item.active a {
+  background-color: var(--color-gray-100);
+  color: var(--color-text);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
-.novastudio-btn:active {
-  transform: translateY(0);
-}
-
-.novastudio-btn-primary {
-  background-color: var(--novastudio-primary);
-  border-color: var(--novastudio-primary);
+.dark-mode .dashboard-menu-item.active a {
+  background-color: rgba(255, 255, 255, 0.1);
   color: white;
-  box-shadow: var(--novastudio-shadow);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
-.novastudio-btn-secondary {
-  background-color: var(--novastudio-secondary);
-  border-color: var(--novastudio-secondary);
-  color: white;
-  box-shadow: var(--novastudio-shadow);
+.dashboard-menu-item a:hover {
+  background-color: var(--color-gray-100);
+  transform: translateY(-2px);
 }
 
-.novastudio-btn-accent {
-  background-color: var(--novastudio-accent);
-  border-color: var(--novastudio-accent);
-  color: #333;
-  box-shadow: var(--novastudio-shadow);
+.dark-mode .dashboard-menu-item a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Tarjetas Neo-Brutalist */
-.novastudio-card {
-  background-color: white;
-  border: var(--novastudio-border-width) solid #e2e8f0;
-  border-radius: var(--novastudio-border-radius);
-  box-shadow: var(--novastudio-shadow);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  transition: transform 300ms, box-shadow 300ms;
-}
-
-.novastudio-card-interactive {
-  cursor: pointer;
-}
-
-.novastudio-card-interactive:hover {
-  transform: translateY(-4px);
-  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.1);
-}
-
-/* Contenedor del editor de tema */
-.novastudio-theme-editor {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.novastudio-editor-section {
-  flex: 1 1 300px;
-}
-
-.novastudio-editor-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--color-text, #505168);
-}
-
-/* Paletas de colores */
-.novastudio-color-palette {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.novastudio-color-item {
-  height: 70px;
-  border-radius: var(--novastudio-border-radius);
-  border: var(--novastudio-border-width) solid #e2e8f0;
-  cursor: pointer;
-  transition: transform 150ms;
-}
-
-.novastudio-color-item:hover {
-  transform: scale(1.05);
-}
-
-.novastudio-color-item.active {
-  border-color: var(--novastudio-primary);
-  box-shadow: 0 0 0 2px var(--novastudio-primary);
-}
-
-/* Presets de tema */
-.novastudio-presets {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.novastudio-preset-card {
-  border: var(--novastudio-border-width) solid #e2e8f0;
-  border-radius: var(--novastudio-border-radius);
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 150ms, box-shadow 150ms;
-}
-
-.novastudio-preset-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--novastudio-shadow);
-}
-
-.novastudio-preset-preview {
-  height: 120px;
-  display: flex;
-  flex-direction: column;
-}
-
-.novastudio-preset-header {
-  height: 24px;
+.dashboard-menu-icon {
+  color: var(--color-gray-500);
+  margin-right: var(--spacing-md);
   display: flex;
   align-items: center;
-  padding: 0 0.5rem;
 }
 
-.novastudio-preset-content {
+.dashboard-menu-item.active .dashboard-menu-icon {
+  color: var(--color-primary);
+}
+
+.collapsed .dashboard-menu-text {
+  display: none;
+}
+
+.collapsed .dashboard-menu-item a {
+  justify-content: center;
+  padding: var(--spacing-md);
+}
+
+.collapsed .dashboard-menu-icon {
+  margin-right: 0;
+}
+
+/* Contenido principal del dashboard */
+.dashboard-main {
   flex: 1;
-  display: flex;
-  padding: 0.5rem;
-}
-
-.novastudio-preset-sidebar {
-  width: 24px;
-  height: 100%;
-  margin-right: 0.5rem;
-}
-
-.novastudio-preset-main {
-  flex: 1;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-normal);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.novastudio-preset-colors {
+.collapsed + .dashboard-main {
+  margin-left: var(--sidebar-collapsed-width);
+}
+
+/* Header del contenido principal */
+.dashboard-header {
+  height: var(--header-height);
   display: flex;
-  gap: 5px;
-  padding: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-lg);
+  border-bottom: var(--border-width) solid var(--color-border);
+  background-color: var(--header-background);
 }
 
-.novastudio-preset-colors span {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-}
-
-.novastudio-preset-name {
-  text-align: center;
-  padding: 0.5rem;
-  font-weight: 600;
-  color: var(--color-text, #505168);
-}
-
-/* Controles de formulario estilizados */
-.novastudio-control {
-  margin-bottom: 1rem;
-}
-
-.novastudio-control-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--color-text, #505168);
-}
-
-.novastudio-input {
-  width: 100%;
-  padding: 0.625rem;
-  border: var(--novastudio-border-width) solid #e2e8f0;
-  border-radius: var(--novastudio-border-radius);
-  background-color: white;
-  transition: border-color 150ms, box-shadow 150ms;
-}
-
-.novastudio-input:focus {
-  border-color: var(--novastudio-primary);
-  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
-  outline: none;
-}
-
-.novastudio-select {
-  display: block;
-  width: 100%;
-  padding: 0.625rem;
-  border: var(--novastudio-border-width) solid #e2e8f0;
-  border-radius: var(--novastudio-border-radius);
-  background-color: white;
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23505168' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.625rem center;
-  background-size: 16px;
-}
-
-.novastudio-select:focus {
-  border-color: var(--novastudio-primary);
-  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
-  outline: none;
-}
-
-/* Personalización de componentes estándar */
-.novastudio-customize .nova-card,
-.novastudio-customize .nova-btn,
-.novastudio-customize .nova-input {
-  margin-bottom: 1rem;
-}
-
-/* Pestañas de configuración */
-.novastudio-tabs {
+.dashboard-header-start,
+.dashboard-header-end {
   display: flex;
-  border-bottom: var(--novastudio-border-width) solid #e2e8f0;
-  margin-bottom: 1.5rem;
+  align-items: center;
 }
 
-.novastudio-tab {
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  color: var(--color-text-light, #718096);
+.dashboard-mobile-menu-toggle {
+  display: none;
+  margin-right: var(--spacing-md);
+  background: none;
+  border: none;
   cursor: pointer;
-  border-bottom: 3px solid transparent;
-  transition: color 150ms, border-color 150ms;
 }
 
-.novastudio-tab:hover {
-  color: var(--color-text, #505168);
+/* Barra de búsqueda */
+.dashboard-search {
+  width: 260px;
 }
 
-.novastudio-tab.active {
-  color: var(--novastudio-primary);
-  border-bottom-color: var(--novastudio-primary);
+.search-form {
+  display: flex;
+  align-items: center;
 }
 
-/* Tema oscuro */
-.dark-mode .novastudio-card {
-  background-color: #343A5E;
-  border-color: #3F4577;
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-gray-100);
+  padding: var(--spacing-sm) var(--spacing-md);
+  width: 100%;
 }
 
-.dark-mode .novastudio-input,
-.dark-mode .novastudio-select {
-  background-color: #2A2D45;
-  border-color: #3F4577;
-  color: #E0E0E0;
+.dark-mode .search-input-wrapper {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.dark-mode .novastudio-color-item {
-  border-color: #3F4577;
+.search-input-wrapper svg {
+  color: var(--color-gray-500);
+  margin-right: var(--spacing-sm);
 }
 
-.dark-mode .novastudio-preset-card {
-  border-color: #3F4577;
+.search-field {
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-size: var(--font-size-sm);
+  outline: none;
+  color: var(--color-text);
 }
 
-.dark-mode .novastudio-tabs {
-  border-bottom-color: #3F4577;
+.dark-mode .search-field {
+  color: var(--color-gray-300);
 }
 
-.dark-mode .novastudio-editor-title,
-.dark-mode .novastudio-control-label,
-.dark-mode .novastudio-preset-name {
-  color: #E0E0E0;
+.search-field::placeholder {
+  color: var(--color-gray-500);
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-  .novastudio-theme-editor {
+.search-submit {
+  display: none;
+}
+
+.search-keyboard-shortcut {
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-gray-200);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-gray-600);
+}
+
+.dark-mode .search-keyboard-shortcut {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-gray-400);
+}
+
+/* Botones de header */
+.dashboard-header-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-lg);
+  border: var(--border-width) solid var(--color-border);
+  background-color: var(--color-gray-100);
+  margin-left: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.dark-mode .dashboard-header-icon {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-header-icon svg {
+  color: var(--color-gray-600);
+}
+
+.dark-mode .dashboard-header-icon svg {
+  color: var(--color-gray-400);
+}
+
+/* Menú de usuario */
+.dashboard-user-menu {
+  position: relative;
+  margin-left: var(--spacing-sm);
+}
+
+.dashboard-user-toggle {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+}
+
+.dashboard-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-md);
+  margin-right: var(--spacing-sm);
+}
+
+.dashboard-user-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin: 0 var(--spacing-sm);
+  color: var(--color-text);
+}
+
+.dark-mode .dashboard-user-name {
+  color: var(--color-gray-300);
+}
+
+.dashboard-user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: var(--spacing-sm);
+  width: 240px;
+  background-color: var(--color-background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  display: none;
+}
+
+.dashboard-user-dropdown.active {
+  display: block;
+}
+
+.dashboard-user-dropdown-header {
+  padding: var(--spacing-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-user-dropdown-header .dashboard-user-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+.dashboard-user-info {
+  margin-left: var(--spacing-md);
+}
+
+.dashboard-user-email {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+  margin-top: var(--spacing-xs);
+}
+
+.dashboard-user-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dashboard-user-menu-list li a {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: background-color var(--transition-fast);
+}
+
+.dark-mode .dashboard-user-menu-list li a {
+  color: var(--color-gray-300);
+}
+
+.dashboard-user-menu-list li:first-child a {
+  border-radius: 0;
+}
+
+.dashboard-user-menu-list li:last-child a {
+  border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+}
+
+.dashboard-user-menu-list li a:hover {
+  background-color: var(--color-gray-100);
+}
+
+.dark-mode .dashboard-user-menu-list li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-user-menu-list li a svg {
+  margin-right: var(--spacing-md);
+  color: var(--color-gray-500);
+}
+
+/* Contenido principal */
+.dashboard-content {
+  flex: 1;
+  padding: var(--spacing-xl);
+  overflow-y: auto;
+}
+
+.dashboard-content-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Migas de pan / Breadcrumbs */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+}
+
+.breadcrumbs-item {
+  color: var(--color-gray-500);
+}
+
+.breadcrumbs-separator {
+  margin: 0 var(--spacing-sm);
+  color: var(--color-gray-400);
+}
+
+.breadcrumbs-item.active {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.breadcrumbs-item a {
+  color: var(--color-gray-500);
+  text-decoration: none;
+}
+
+.breadcrumbs-item a:hover {
+  color: var(--color-primary);
+}
+
+/* Encabezados de página */
+.dashboard-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.dashboard-page-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text);
+}
+
+.dashboard-page-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Botones generales */
+.button {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: var(--border-width) solid;
+}
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.button-secondary {
+  background-color: var(--color-background);
+  color: var(--color-gray-700);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-md);
+}
+
+.dark-mode .button-secondary {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--color-gray-300);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.button svg {
+  margin-right: var(--spacing-sm);
+}
+
+/* Sidebar Footer */
+.dashboard-sidebar-footer {
+  padding: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.saas-dark-mode-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-gray-100);
+  border: var(--border-width) solid var(--color-border);
+}
+
+.dark-mode .saas-dark-mode-toggle {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.saas-dark-mode-toggle__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode .icon-moon {
+  display: none;
+}
+
+.icon-sun {
+  display: none;
+}
+
+.dark-mode .icon-sun {
+  display: block;
+}
+
+/* ======================================
+   Media Queries para Responsividad
+   ====================================== */
+@media screen and (max-width: 1024px) {
+  .dashboard-sidebar {
+    position: fixed;
+    left: -100%;
+    transition: left var(--transition-normal);
+    z-index: 1000;
+  }
+  
+  .dashboard-sidebar.active {
+    left: 0;
+  }
+  
+  .dashboard-main {
+    margin-left: 0;
+  }
+  
+  .dashboard-mobile-menu-toggle {
+    display: block;
+  }
+  
+  .dashboard-search {
+    width: 200px;
+  }
+  
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .main-widgets {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-search {
+    display: none;
+  }
+  
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-page-header {
     flex-direction: column;
+    align-items: flex-start;
   }
   
-  .novastudio-tabs {
-    flex-wrap: wrap;
+  .dashboard-page-actions {
+    margin-top: var(--spacing-md);
   }
   
-  .novastudio-tab {
-    flex: 1 1 auto;
-    text-align: center;
+  .secondary-widgets {
+    grid-template-columns: 1fr;
   }
+}
+
+/* ======================================
+   Estilos para Panel de Administración
+   ====================================== */
+.novastudio-admin-header {
+  margin-bottom: var(--spacing-xl);
+  border-bottom: var(--border-width) solid var(--color-border);
+  padding-bottom: var(--spacing-md);
+}
+
+.novastudio-admin-header h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-primary);
+}
+
+.novastudio-admin-header p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+  margin-top: 0;
+}
+
+.novastudio-admin-tabs {
+  display: flex;
+  border-bottom: var(--border-width) solid var(--color-border);
+  margin-bottom: var(--spacing-xl);
+}
+
+.novastudio-admin-tab {
+  padding: var(--spacing-md) var(--spacing-lg);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  position: relative;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.novastudio-admin-tab.active {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.novastudio-admin-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.novastudio-admin-tab:hover {
+  color: var(--color-primary);
+}
+
+.novastudio-admin-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.novastudio-admin-section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.novastudio-admin-card {
+  background-color: var(--color-background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.novastudio-admin-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+}
+
+.novastudio-admin-card-title svg {
+  margin-right: var(--spacing-sm);
+  color: var(--color-primary);
+}
+
+.novastudio-admin-form-row {
+  margin-bottom: var(--spacing-md);
+}
+
+.novastudio-admin-form-label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.novastudio-admin-input,
+.novastudio-admin-select,
+.novastudio-admin-textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--input-background);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+}
+
+.novastudio-admin-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.novastudio-admin-button {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: var(--border-width) solid;
+  text-decoration: none;
+}
+
+.novastudio-admin-button-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.novastudio-admin-button-secondary {
+  background-color: var(--color-secondary);
+  color: white;
+  border-color: var(--color-secondary);
+  box-shadow: var(--shadow-md);
+}
+
+.novastudio-admin-button-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.novastudio-admin-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Rejilla para campos de formulario */
+.novastudio-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+/* Notificaciones y alertas */
+.novastudio-notice {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: flex-start;
+  border: var(--border-width) solid;
+}
+
+.novastudio-notice-icon {
+  margin-right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.novastudio-notice-content {
+  flex: 1;
+}
+
+.novastudio-notice-title {
+  font-weight: var(--font-weight-bold);
+  margin-top: 0;
+  margin-bottom: var(--spacing-xs);
+}
+
+.novastudio-notice-message {
+  margin: 0;
+}
+
+.novastudio-notice-success {
+  background-color: rgba(123, 201, 80, 0.1);
+  border-color: rgba(123, 201, 80, 0.3);
+}
+
+.novastudio-notice-success .novastudio-notice-icon {
+  color: var(--color-success);
+}
+
+.novastudio-notice-warning {
+  background-color: rgba(255, 165, 82, 0.1);
+  border-color: rgba(255, 165, 82, 0.3);
+}
+
+.novastudio-notice-warning .novastudio-notice-icon {
+  color: var(--color-warning);
+}
+
+.novastudio-notice-error {
+  background-color: rgba(247, 111, 142, 0.1);
+  border-color: rgba(247, 111, 142, 0.3);
+}
+
+.novastudio-notice-error .novastudio-notice-icon {
+  color: var(--color-error);
+}
+
+.novastudio-notice-info {
+  background-color: rgba(78, 205, 196, 0.1);
+  border-color: rgba(78, 205, 196, 0.3);
+}
+
+.novastudio-notice-info .novastudio-notice-icon {
+  color: var(--color-secondary);
 }
