@@ -482,9 +482,12 @@ function novastudio_text_shortcode( $atts, $content = null ) {
 add_shortcode( 'saas_text', 'novastudio_text_shortcode' );
 
 /**
- * Registrar el shortcode [saas_button]
+ * Registrar el shortcode [saas_button] en el contexto de secciones
+ * 
+ * Esta función se ha renombrado para evitar conflictos con la función
+ * novastudio_button_shortcode definida en saas-buttons.php
  */
-function novastudio_button_shortcode( $atts, $content = null ) {
+function novastudio_section_button_shortcode( $atts, $content = null ) {
     $defaults = array(
         'id'         => '',
         'class'      => '',
@@ -574,7 +577,8 @@ function novastudio_button_shortcode( $atts, $content = null ) {
     
     return $output;
 }
-add_shortcode( 'saas_button', 'novastudio_button_shortcode' );
+// Note: No registramos este shortcode aquí porque ya está registrado en saas-buttons.php
+// add_shortcode( 'saas_button', 'novastudio_section_button_shortcode' );
 
 /**
  * Registrar el shortcode [saas_image]
